@@ -130,7 +130,7 @@ namespace TWI_Master
         Wire.beginTransmission(sAddr);
         Wire.write(_zipper->_getCommandToSend());
         Wire.endTransmission();
-        delay(10);
+        delay(30);
     }
 
     void read()
@@ -148,7 +148,6 @@ namespace TWI_Master
 					request.rawData[i] = Wire.read();
 				}         
 				_zipper->_setRequestedData(request);
-				break;
 			}
 		}
 		Serial.print("Data: ");
