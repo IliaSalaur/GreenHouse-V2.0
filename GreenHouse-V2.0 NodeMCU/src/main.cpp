@@ -5,6 +5,8 @@ DataZipper<MASTER> zipper;
 uint32_t timer = 0;
 Command comm;
 
+void printRequest();
+
 void setup() {
 
   Serial.begin(115200);
@@ -15,35 +17,56 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available() > 0)
+  if(Serial.available() > 1)
   {
     char c = Serial.read();
-    
+    Serial.println(c);
+
     switch(c)
     {
       case 'i':
         zipper.sendCommand(9, 3, 0);
         TWI_Master::send();
+        printRequest();
         break;
 
       case 'a':
-        zipper.sendCommand(9, 3, 1);
+        zipper.sendCommand(9 , 3, 1);
         TWI_Master::send();
+        printRequest();
         break;
 
       case 'g':
         zipper.sendCommand(0, 1, 0);
         TWI_Master::send();
+        printRequest();
         break;
 
       case 's':
         zipper.sendCommand(0, 0, 0);
         TWI_Master::send();
+        printRequest();
+        break;
+
+      case 'z':
+        zipper.sendCommand(4, 0, 0);
+        TWI_Master::send();
+        printRequest();
+        break;
+
+      case 'x':
+        zipper.sendCommand(4, 1, 0);
+        TWI_Master::send();
+        printRequest();
         break;
     }
-    
-
-    TWI_Master::read();
-    Serial.println(zipper.getData());
+  
+    Serial.flush();
   }
+}
+
+void printRequest()
+{
+  TWI_Master::read();
+  Serial.println(zipper.getData());
 }

@@ -103,6 +103,15 @@ class DataZipper<SLAVE>
         	_command = 0;
 			return decryptedCommand;
 		}
+		else 
+		{
+			Command nullCommand;
+			nullCommand.id = 0;
+			nullCommand.action = 0;
+			nullCommand.argument = 0;
+			nullCommand.encCommand = 0;
+			return nullCommand;
+		}
 	}
 	
 	void _setCommandReceived(uint8_t commandReceived)
@@ -156,7 +165,7 @@ namespace TWI_Slave
     DataZipper<SLAVE> *_unzipper;
     int mAddr;
 
-    void receiveEvent(size_t howMany)
+    void receiveEvent(int howMany)
     {
         _unzipper->_setCommandReceived(Wire.read());
     }

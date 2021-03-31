@@ -57,7 +57,9 @@ class DataZipper<MASTER>
 	
 	float getData()
 	{
-        return _response.fdata;
+		float data = _response.fdata;
+		_response.fdata = 0.0;
+        return data;
 	}
 	
 	uint8_t _getCommandToSend()
@@ -128,22 +130,29 @@ namespace TWI_Master
         Wire.beginTransmission(sAddr);
         Wire.write(_zipper->_getCommandToSend());
         Wire.endTransmission();
-        delay(1);
+        delay(10);
     }
 
     void read()
     {
+
+		uint32_t requestTimer = millis();
+		RequestedData request;
         Wire.requestFrom(sAddr, 4);
-        delay(1);
-        if(Wire.available() > 0)
-        {
-            RequestedData request;
-            for(byte i = 0; i < 4; i++)
-            {
-                request.rawData[i] = Wire.read();
-            }         
-            _zipper->_setRequestedData(request);
-        }
+		while(millis() - requestTimer < 700)
+		{
+			if(Wire.available() > 0)
+			{				
+				for(byte i = 0; i < 4; i++)
+				{
+					request.rawData[i] = Wire.read();
+				}         
+				_zipper->_setRequestedData(request);
+				break;
+			}
+		}
+		Serial.print("Data: ");
+		Serial.println(request.fdata);
     }
 }
 

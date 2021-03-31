@@ -30,12 +30,15 @@ class GroupPlant
 {
 private:
     String _exception = "";
+    uint16_t _requestPeriod = 15000;
     uint16_t _calibrationAirValue = 0;
     uint16_t _calibrationWaterValue = 0;
+    uint32_t _soilTempRequestTimer = 0;
     uint8_t _groupId = 0; 
     uint8_t _pumpPin = 0;
     uint8_t _soilPin = 0;
     bool _pumpState = 0;
+    float _soilTemp = 0;
     DeviceAddress *_tempSensorAddr;
     DallasTemperature * _tempSensor;
 
@@ -52,6 +55,8 @@ public:
     uint8_t getGroupId();
     uint16_t getSoilMoisture();
     float getSoilTemp();        
+    void requestSoilTemp();
+    void setRequestPeriod(uint16_t requestPeriod);
     String getExceptions();
     ~GroupPlant();
 };
@@ -150,15 +155,30 @@ uint16_t GroupPlant::getSoilMoisture()
 }
 float GroupPlant::getSoilTemp()
 {
-  _tempSensor->requestTemperaturesByAddress((uint8_t*)_tempSensorAddr);
-  float soilTemp = (float)_tempSensor->getTempC((uint8_t*)_tempSensorAddr);
-  if (soilTemp != DEVICE_DISCONNECTED_C)   return soilTemp;
-  else
+  return _soilTemp;
+}
+
+void GroupPlant::requestSoilTemp()
+{
+  if(millis() - _soilTempRequestTimer > _requestPeriod)
   {
-    _exception += "Device disconected";
-    return DEVICE_DISCONNECTED_C;
+    _soilTempRequestTimer = millis();
+     _tempSensor->requestTemperaturesByAddress((uint8_t*)_tempSensorAddr);
+    float soilTemp = (float)_tempSensor->getTempC((uint8_t*)_tempSensorAddr);
+    
+    if (soilTemp != DEVICE_DISCONNECTED_C)   _soilTemp = soilTemp;
+    else
+    {
+      _exception += "Device disconected";
+    }
   }
 }
+
+void GroupPlant::setRequestPeriod(uint16_t requestPeriod)
+{
+  _requestPeriod = requestPeriod;
+}
+
 String GroupPlant::getExceptions()
 {
   return _exception;

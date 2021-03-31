@@ -70,6 +70,11 @@ void loop() {
   Serial.println("loop");
   commandHandler(unzipper.getCommand());
   jalouse.handle();
+
+  for(byte i = 0; i < 4; i++)
+  {
+    groups[i]->requestSoilTemp();
+  }
 }
 
 void setupGroups()
