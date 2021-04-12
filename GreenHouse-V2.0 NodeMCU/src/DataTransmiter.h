@@ -266,21 +266,5 @@ public:
 		request.fdata = 0.0;
 		return data;
 	}
-
-	bool getState()
-	{
-		bool state = 0;
-		uint32_t requestTimer = millis();
-		Wire.requestFrom(_sAddr, 1);
-		while(millis() - requestTimer < 700)
-		{
-			if(Wire.available() > 0)
-			{				
-				state = Wire.read();		        
-				break;
-			}
-		}
-		return state;
-	}   
 };
 #endif

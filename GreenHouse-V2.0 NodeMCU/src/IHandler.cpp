@@ -24,12 +24,7 @@ void PumpHandler::setMode(ISensor * sensor)
 
 void PumpHandler::handle()
 {
-    if(millis() - _syncTimer > SYNC)
-    {
-        _syncTimer = millis();
-        _twi->sendCommand(_id, 0b10, 0);
-        if(_enabled != _twi->getState())    _twi->sendCommand(_id, 3, _enabled);
-    }
+    //sync deleted
     bool sensorState = _sensor->isEnabled();
     if(sensorState == 1 && _sensorState == 0)
     {
