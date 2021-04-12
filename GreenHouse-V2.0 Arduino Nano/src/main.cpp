@@ -49,6 +49,8 @@ bool heatState = 0;
 bool fanState = 0;
 bool jalouseDown = 0; // off - open , down 0 - open
 
+uint32_t airDataRequestTimer = 0;
+
 void setup() {
 
   Serial.begin(115200);
@@ -67,7 +69,6 @@ void setup() {
 }
 
 void loop() { 
-  Serial.println("loop");
   commandHandler(unzipper.getCommand());
   jalouse.handle();
 
@@ -75,6 +76,16 @@ void loop() {
   {
     groups[i]->requestSoilTemp();
   }
+
+  if(millis() - airDataRequestTimer > 15000)
+  {
+    airDataRequestTimer = millis();
+    float t = dht.readTemperature();
+    float h = dht.readHumidity();
+    if (!isnan(t)) tempAir = t;
+    if (!isnan(h)) hudmAir = h;
+  }
+
 }
 
 void setupGroups()
@@ -170,8 +181,7 @@ void commandHandler(Command _comm)
         }
         else if(_comm.id == 4)
         {
-          float t = dht.readTemperature();
-          if (!isnan(t)) unzipper.sendData(t);
+          unzipper.sendData(tempAir);
         }
         break;
 
@@ -182,8 +192,7 @@ void commandHandler(Command _comm)
           }
           else if(_comm.id == 4)
           {
-            float f = dht.readHumidity();
-            if (!isnan(f)) unzipper.sendData(f);
+            unzipper.sendData(hudmAir);
           }
         break;
 
@@ -215,6 +224,10 @@ void commandHandler(Command _comm)
         case 9:
           if(_comm.argument == 1) jalouse.open();
           else jalouse.close();
+          break;
+
+        default:
+          if(_comm.id < 4) groups[_comm.id]->turnPump(_comm.argument);
           break;
         }
         break;

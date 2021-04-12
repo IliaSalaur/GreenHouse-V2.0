@@ -116,16 +116,18 @@ class DataZipper<SLAVE>
 	}
 };
 
-namespace TWI_Master
+class TWI_Master
 {
-    DataZipper<MASTER> *_zipper;
-    int sAddr;
-    void init(int SDA_pin, int SCL_pin,int mAddr)
+	public:
+
+    static DataZipper<MASTER> *_zipper;
+    static int sAddr;
+    static void init(int SDA_pin, int SCL_pin,int mAddr)
     {
         Wire.begin(SDA_pin, SCL_pin, mAddr);
     }
 
-    void send()
+    static void send()
     {
         Wire.beginTransmission(sAddr);
         Wire.write(_zipper->_getCommandToSend());
@@ -133,7 +135,7 @@ namespace TWI_Master
         delay(30);
     }
 
-    void read()
+    static void read()
     {
 
 		uint32_t requestTimer = millis();
@@ -148,25 +150,26 @@ namespace TWI_Master
 					request.rawData[i] = Wire.read();
 				}         
 				_zipper->_setRequestedData(request);
+				break;
 			}
 		}
 		Serial.print("Data: ");
 		Serial.println(request.fdata);
     }
-}
+};
 
-namespace TWI_Slave
+class TWI_Slave
 {
-    DataZipper<SLAVE> *_unzipper;
-    int mAddr;
+    static DataZipper<SLAVE> *_unzipper;
+    static int mAddr;
 
-    void receiveEvent(size_t howMany)
+    static void receiveEvent(size_t howMany)
     {
         (void)howMany;
         _unzipper->_setCommandReceived(Wire.read());
     }
 
-    void requestEvent()
+    static void requestEvent()
     {
         for(byte i = 0; i < 4; i++)
         {
@@ -174,13 +177,110 @@ namespace TWI_Slave
         }
     }
 
-    void init(int sAddr)
+    static void init(int sAddr)
     {
         Wire.begin(sAddr);
         Wire.onReceive(receiveEvent);
         Wire.onRequest(requestEvent);
     }
 
-}
+};
 
+template<TwiMode _twiMode>
+class I2CHandler
+{
+
+};
+/*
+template<>
+class I2CHandler<SLAVE>
+{
+private:
+	uint8_t _command;
+	
+	static I2CHandler<SLAVE> * pSingletonInstance;
+
+	static void requestEvent()
+	{
+
+	}
+
+	static void receiveEvent()
+	{
+
+	}
+public:
+
+
+
+};
+
+I2CHandler<SLAVE> * I2CHandler<SLAVE>::pSingletonInstance = 0;
+*/
+
+template<>
+class I2CHandler<MASTER>
+{
+private:
+	int _sAddr;
+	RequestedData request;
+public:
+
+	I2CHandler()
+	{
+		_sAddr = 0;
+		request.fdata = 0.0;
+	}
+
+	void begin(int SDA_pin, int SCL_pin,int mAddr, int sAddr)
+	{
+        Wire.begin(SDA_pin, SCL_pin, mAddr);
+		_sAddr = sAddr;
+    }
+
+	void sendCommand(uint8_t id, uint8_t action, uint8_t argument)
+	{
+		byte enc = 0b10000000 | (id << 3) | (action << 1) | argument;
+		Wire.beginTransmission(_sAddr);
+        Wire.write(enc);
+        Wire.endTransmission();
+        delay(30);
+	}
+
+	float getData(bool gettingState = 0)
+	{	
+		uint32_t requestTimer = millis();
+		Wire.requestFrom(_sAddr, 4);
+		while(millis() - requestTimer < 700)
+		{
+			if(Wire.available() > 0)
+			{				
+				for(byte i = 0; i < 4; i++)
+				{
+					request.rawData[i] = Wire.read();
+				}         
+				break;
+			}
+		}
+		float data = request.fdata;
+		request.fdata = 0.0;
+		return data;
+	}
+
+	bool getState()
+	{
+		bool state = 0;
+		uint32_t requestTimer = millis();
+		Wire.requestFrom(_sAddr, 1);
+		while(millis() - requestTimer < 700)
+		{
+			if(Wire.available() > 0)
+			{				
+				state = Wire.read();		        
+				break;
+			}
+		}
+		return state;
+	}   
+};
 #endif
