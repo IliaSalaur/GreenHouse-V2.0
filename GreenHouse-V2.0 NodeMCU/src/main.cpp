@@ -8,11 +8,11 @@ I2CHandler<MASTER> twi;
 
 Scheduler *pumpSch[4];
 SoilTemperatureSensor *soilTemp[4];
-//ISensor *soilTemp[4];
+
 SoilMoistureSensor *soilMois[4];
 Manual manual;
 
-PumpHandler handler = PumpHandler();
+Handler handler = Handler();
 
 WiFiUDP ntpUdp;
 NTPClient timeClient(ntpUdp, "europe.pool.ntp.org");
@@ -24,7 +24,6 @@ void twiRequestTest();
 void handlerTest();
 
 void setup() {
-
   Serial.begin(115200);
   Serial.setTimeout(50);
   twi.begin(D1, D2, 0x12, 0x13);
@@ -100,10 +99,10 @@ void twiRequestTest()
 }
 
 void handlerTest()
-{if(millis() - timer > 300)
 {
-  timer = millis();
-  handler.handle();
-}
-  
+  if(millis() - timer > 300)
+  {
+    timer = millis();
+    handler.handle();
+  }
 }

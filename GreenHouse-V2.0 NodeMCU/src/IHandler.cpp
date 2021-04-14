@@ -3,7 +3,11 @@
 
 IHandler::IHandler(){}
 
-PumpHandler::PumpHandler()
+
+/*----------------------------------------------------------------------------------------------*/
+
+
+Handler::Handler()
 {
     _id = 0;
     _sensorState = 0;
@@ -11,18 +15,18 @@ PumpHandler::PumpHandler()
     _syncTimer = -SYNC;
 }
 
-void PumpHandler::begin(uint8_t id, I2CHandler<MASTER> *twi)
+void Handler::begin(uint8_t id, I2CHandler<MASTER> *twi)
 {
     _id = id;
     _twi = twi;
 }
 
-void PumpHandler::setMode(ISensor * sensor)
+void Handler::setMode(ISensor * sensor)
 {
     _sensor = sensor;
 }
 
-void PumpHandler::handle()
+void Handler::handle()
 {
     //sync deleted
     bool sensorState = _sensor->isEnabled();
@@ -45,17 +49,17 @@ void PumpHandler::handle()
 
 }
 
-bool PumpHandler::getState()
+bool Handler::getState()
 {
     return _enabled;
 }
 
-Modes PumpHandler::getMode()
+Modes Handler::getMode()
 {
     return _sensor->getMode();
 }
 
-void PumpHandler::manualEnable(bool enable)
+void Handler::manualEnable(bool enable)
 {
     _enabled = enable;
     _twi->sendCommand(_id, 3, enable);
@@ -65,33 +69,4 @@ void PumpHandler::manualEnable(bool enable)
 /*----------------------------------------------------------------------------------------------*/
 
 
-ClimateHandler::ClimateHandler()
-{
-
-}
-
-void ClimateHandler::begin(uint8_t id, I2CHandler<MASTER> *twi)
-{
-
-}
-
-void ClimateHandler::setMode(ISensor *sensor)
-{
-
-} 
-
-void ClimateHandler::handle()
-{
-
-}
-
-bool ClimateHandler::getState()
-{
-
-}
-
-Modes ClimateHandler::getMode()
-{
-
-}
 

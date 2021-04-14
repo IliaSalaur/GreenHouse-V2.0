@@ -6,6 +6,7 @@
 #include <Wire.h>
 
 #define DEBUG(x, y) Serial.println(String(x) + String(y));
+#define REQUEST_TIMEOUT 15
 
 enum TwiMode
 {
@@ -223,13 +224,14 @@ class I2CHandler<MASTER>
 {
 private:
 	int _sAddr;
+	const uint32_t _requestTimeout = REQUEST_TIMEOUT; 
 	RequestedData request;
 public:
 
 	I2CHandler()
 	{
 		_sAddr = 0;
-		request.fdata = 0.0;
+		request.fdata = 0.0;		
 	}
 
 	void begin(int SDA_pin, int SCL_pin,int mAddr, int sAddr)

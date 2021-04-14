@@ -25,13 +25,13 @@ public:
     virtual Modes getMode() = 0;
 };
 
-class PumpHandler : IHandler
+class Handler : IHandler
 {
 private:
 
 
 public:
-    PumpHandler();
+    Handler();
     void begin(uint8_t id, I2CHandler<MASTER> *twi) override;
     void setMode(ISensor *sensor) override;
     void handle() override;
@@ -40,7 +40,7 @@ public:
     Modes getMode() override;
 
 };
-
+/*
 class ClimateHandler : IHandler
 {
 private:
@@ -54,5 +54,5 @@ public:
     bool getState() override;
     Modes getMode() override;
 };
-
+*/
 #endif
