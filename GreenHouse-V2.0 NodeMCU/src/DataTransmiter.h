@@ -224,7 +224,7 @@ class I2CHandler<MASTER>
 {
 private:
 	int _sAddr;
-	const uint32_t _requestTimeout = REQUEST_TIMEOUT; 
+	uint32_t _requestTimeoutTimer = REQUEST_TIMEOUT; 
 	RequestedData request;
 public:
 
@@ -246,7 +246,7 @@ public:
 		Wire.beginTransmission(_sAddr);
         Wire.write(enc);
         Wire.endTransmission();
-        delay(30);
+        delay(1);
 	}
 
 	float getData(bool gettingState = 0)
@@ -264,6 +264,7 @@ public:
 				break;
 			}
 		}
+		delay(1);
 		float data = request.fdata;
 		request.fdata = 0.0;
 		return data;
