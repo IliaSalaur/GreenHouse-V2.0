@@ -4,9 +4,9 @@
 #define DATATRANSMITER_H
 #include <Arduino.h>
 #include <Wire.h>
-
-#define DEBUG(x, y) Serial.println(String(x) + String(y));
+#include <Debug.h>
 #define REQUEST_TIMEOUT 15
+
 
 enum TwiMode
 {

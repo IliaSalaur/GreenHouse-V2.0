@@ -36,13 +36,11 @@ bool SoilTemperatureSensor::isEnabled()
     Serial.print(this->getData());
     if(this->getData() >= (_normVal + BORDER))
     {
-        Serial.println("  0");
         _enabled = 0;
     }
 
     else if(this->getData() < (_normVal - BORDER))
     {
-        Serial.println("  1");
         _enabled = 1;
     }
     else Serial.println();
@@ -67,13 +65,14 @@ SoilMoistureSensor::SoilMoistureSensor(I2CHandler<MASTER> *twi)
 {
     _twi = twi;
     _requestPeriod = REQUEST_TIMER;
-    _requestTimer = 0;
+    _requestTimer = millis() + REQUEST_TIMER;
     _enabled = 0;
+    _data = 0.0;
 }
 
 void SoilMoistureSensor::begin(uint8_t id)
-{    
-    _id = id;    
+{
+    _id = id;
 }
 
 float SoilMoistureSensor::getData()
@@ -82,6 +81,7 @@ float SoilMoistureSensor::getData()
     {
         _requestTimer = millis();
         _twi->sendCommand(_id, 1, 0);
+
         //SEND -READ;
         _data = _twi->getData();
     }
@@ -90,22 +90,18 @@ float SoilMoistureSensor::getData()
 
 bool SoilMoistureSensor::isEnabled()
 {
-    if(this->getData() >= _normVal + 5)
+    Serial.println(this->getData());
+    if(this->getData() >= (_normVal + BORDER))
     {
         _enabled = 0;
-        return 0;
     }
 
-    else if(this->getData() <= _normVal - 5)
+    else if(this->getData() < (_normVal - BORDER))
     {
         _enabled = 1;
-        return 1;
     }
-    else 
-    {
-        _enabled = 0;
-        return 0;
-    }
+    else Serial.println();
+    return _enabled;    
 }
 
 void SoilMoistureSensor::setNormDataVal(float val)
@@ -117,7 +113,6 @@ Modes SoilMoistureSensor::getMode()
 {
     return _mode;
 }
-
 
 /*----------------------------------------------------------------------------------------------*/
 
@@ -174,7 +169,7 @@ Time Scheduler::getTime()
         _requestTimer = millis();
         _timeClient->update();
         _time.dayIndex = (_timeClient->getDay() == 0) ? 7:_timeClient->getDay();
-        _time.hour = _timeClient->getHours() + _timeZone;
+        _time.hour = _timeClient->getHours();
         _time.minute = _timeClient->getMinutes();        
     }
     return _time;
@@ -199,6 +194,7 @@ bool Scheduler::isEnabled()
 void Scheduler::setTimezone(int gmtChange)
 {
     _timeZone = gmtChange;
+    _timeClient->setTimeOffset(_timeZone);
 }
 
 Modes Scheduler::getMode()
