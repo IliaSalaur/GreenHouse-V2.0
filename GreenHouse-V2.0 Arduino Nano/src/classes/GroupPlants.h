@@ -1,17 +1,17 @@
 #pragma once
-#define G1_SOILPIN  A4
+#define G1_SOILPIN  A7
 #define G1_PUMPPIN  8
 #define G1_ID 1
 
-#define G2_SOILPIN  A5
+#define G2_SOILPIN  A6
 #define G2_PUMPPIN  9
 #define G2_ID 2
 
-#define G3_SOILPIN  A6
+#define G3_SOILPIN  A3
 #define G3_PUMPPIN  10
 #define G3_ID 3
 
-#define G4_SOILPIN  A7
+#define G4_SOILPIN  A2
 #define G4_PUMPPIN  11
 #define G4_ID 4
 
@@ -31,13 +31,14 @@ class GroupPlant
 private:
     String _exception = "";
     uint16_t _requestPeriod = 15000;
-    uint16_t _calibrationAirValue = 0;
+    uint16_t _calibrationAirValue = 1024;
     uint16_t _calibrationWaterValue = 0;
     uint32_t _soilTempRequestTimer = 0;
     uint8_t _groupId = 0; 
     uint8_t _pumpPin = 0;
     uint8_t _soilPin = 0;
     bool _pumpState = 0;
+    bool _addrNotFound = 0;
     float _soilTemp = 0;
     DeviceAddress *_tempSensorAddr;
     DallasTemperature * _tempSensor;
@@ -88,10 +89,14 @@ void GroupPlant::begin()
   pinMode(_pumpPin, OUTPUT);
   digitalWrite(_pumpPin, LOW);
   _tempSensor->begin();
-  if (!_tempSensor->getAddress(*_tempSensorAddr, _groupId)) _exception += "Addr not found";
+  if (!_tempSensor->getAddress(*_tempSensorAddr, _groupId)){
+    _addrNotFound = 1;
+    _exception += "Addr not found";
+  } 
   else
   {
     _exception += "Addr found: ";
+    _addrNotFound = 0;
     for(byte i = 0; i < 8; i++)
     {
       _exception += String(byte(*_tempSensorAddr[i]));
@@ -160,7 +165,7 @@ float GroupPlant::getSoilTemp()
 
 void GroupPlant::requestSoilTemp()
 {
-  if(millis() - _soilTempRequestTimer > _requestPeriod)
+  if(millis() - _soilTempRequestTimer > _requestPeriod && _addrNotFound == 0)
   {
     _soilTempRequestTimer = millis();
      _tempSensor->requestTemperaturesByAddress((uint8_t*)_tempSensorAddr);

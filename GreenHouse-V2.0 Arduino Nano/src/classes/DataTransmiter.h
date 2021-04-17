@@ -187,4 +187,90 @@ namespace TWI_Slave
 
 }
 
+template<TwiMode _twiMode>
+class I2CHandler
+{
+
+};
+
+template<>
+class I2CHandler<SLAVE>
+{
+private:
+	uint8_t _command;
+	RequestedData request;
+	
+	static I2CHandler<SLAVE> * pSingletonInstance;
+
+	static void requestEvent()
+	{
+		if(pSingletonInstance)
+		{
+			pSingletonInstance->_sendData();
+		}
+	}
+
+	static void receiveEvent()
+	{
+		if(pSingletonInstance)
+		{
+			pSingletonInstance->_receiveData();
+		}
+	}
+
+	void _receiveData()
+	{
+		_command = Wire.read();
+	}
+
+	void _sendData()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			Wire.write(request.rawData[i]);
+		}
+		request.fdata = -1;
+	}
+public:
+
+	void begin(int addr)
+	{
+		I2CHandler<SLAVE>::pSingletonInstance = this;
+		Wire.onReceive(I2CHandler<SLAVE>::receiveEvent);
+		Wire.onRequest(I2CHandler<SLAVE>::requestEvent);
+		Wire.begin(addr);
+	}
+
+	Command getCommand()
+	{
+		if(_command >> 7 == 1)
+		{
+			Command decryptedCommand;
+			decryptedCommand.encCommand = _command;
+        	decryptedCommand.id = (_command & 0b01111000) >> 3;
+        	decryptedCommand.action = (_command & 0b00000110) >> 1;
+        	decryptedCommand.argument = (_command & 0b00000001);
+        	_command = 0;
+			return decryptedCommand;
+		}
+		else 
+		{
+			Command nullCommand;
+			nullCommand.id = 0;
+			nullCommand.action = 0;
+			nullCommand.argument = 0;
+			nullCommand.encCommand = 0;
+			return nullCommand;
+		}
+	}
+
+	void sendData(float data)
+	{
+		request.fdata = data;
+	}
+};
+
+I2CHandler<SLAVE> * I2CHandler<SLAVE>::pSingletonInstance = 0;
+
+
 #endif

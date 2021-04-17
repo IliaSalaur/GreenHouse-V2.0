@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "classes/GroupPlants.h"
 
-#define LIGHT_PIN A0
-#define HEAT_PIN A1
-#define FAN_PIN A2
+#define LIGHT_PIN 13
+#define HEAT_PIN A0
+#define FAN_PIN A1
 #define WATER_PIN 12
 
 #include <DHT.h>
@@ -20,17 +20,19 @@ DHT dht(DHT_PIN, DHT_TYPE);
 Jalouse jalouse(STEPPER_PIN_4, STEPPER_PIN_2, STEPPER_PIN_3, STEPPER_PIN_1);
 
 #include "classes/DataTransmiter.h"
-#define ONEWIRE_BUS_PIN 13
+#define ONEWIRE_BUS_PIN 3
 OneWire oneWire(ONEWIRE_BUS_PIN);
 DallasTemperature tempSoil(&oneWire);
 DeviceAddress groupsAddr[4];
 GroupPlant *groups[4];
 Settings settings[4];
+
+#define DEBUG(x) Serial.println(x);
 //const int soilpins[4] = {G1_SOILPIN, G2_SOILPIN, G3_SOILPIN, G4_SOILPIN};
 //const int pumppins[4] = {G1_PUMPPIN, G2_PUMPPIN, G3_PUMPPIN, G4_PUMPPIN};
 //const int id[4] = {1, 2, 3, 4};
 
-DataZipper<SLAVE> unzipper;
+I2CHandler<SLAVE> twi;
 uint32_t timer = 0;
 
 void setupGroups();
@@ -61,15 +63,11 @@ void setup() {
 
   dht.begin();
 
-  TWI_Slave::init(0x13);
-  TWI_Slave::_unzipper = &unzipper;
-  TWI_Slave::mAddr = 0x12;
-  unzipper.sendData(14.57);
-
+  twi.begin(0x13);
 }
 
 void loop() { 
-  commandHandler(unzipper.getCommand());
+  commandHandler(twi.getCommand());
   jalouse.handle();
 
   for(byte i = 0; i < 4; i++)
@@ -177,39 +175,39 @@ void commandHandler(Command _comm)
       case 0b0:
         if(_comm.id < 4)
         {
-          unzipper.sendData(groups[_comm.id]->getSoilTemp());
+          twi.sendData(groups[_comm.id]->getSoilTemp());
         }
         else if(_comm.id == 4)
         {
-          unzipper.sendData(tempAir);
+          twi.sendData(tempAir);
         }
         break;
 
       case 0b1:
           if(_comm.id < 4)
           {
-            unzipper.sendData(groups[_comm.id]->getSoilMoisture());
+            twi.sendData(groups[_comm.id]->getSoilMoisture());
           }
           else if(_comm.id == 4)
           {
-            unzipper.sendData(hudmAir);
+            twi.sendData(hudmAir);
           }
         break;
 
       case 0b10:
         switch (_comm.id)
         {
-        case 5: unzipper.sendData(digitalRead(LIGHT_PIN)); break;
-        case 6: unzipper.sendData(digitalRead(HEAT_PIN)); break;
-        case 7: unzipper.sendData(digitalRead(FAN_PIN)); break;
-        case 8: unzipper.sendData(digitalRead(WATER_PIN)); break;
+        case 5: twi.sendData(digitalRead(LIGHT_PIN)); break;
+        case 6: twi.sendData(digitalRead(HEAT_PIN)); break;
+        case 7: twi.sendData(digitalRead(FAN_PIN)); break;
+        case 8: twi.sendData(digitalRead(WATER_PIN)); break;
         case 9:
-          if(jalouse.getState() == CLOSE) unzipper.sendData(0.0);
-          else unzipper.sendData(1.0);
+          if(jalouse.getState() == CLOSE) twi.sendData(0.0);
+          else twi.sendData(1.0);
           break;
           
         default:
-          if(_comm.id < 4) unzipper.sendData(groups[_comm.id]->getPumpState());
+          if(_comm.id < 4) twi.sendData(groups[_comm.id]->getPumpState());
           break;
         }
         break;  

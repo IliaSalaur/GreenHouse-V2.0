@@ -246,7 +246,7 @@ public:
 		Wire.beginTransmission(_sAddr);
         Wire.write(enc);
         Wire.endTransmission();
-        delay(1);
+        delay(10);
 	}
 
 	float getData(bool gettingState = 0)
@@ -264,7 +264,7 @@ public:
 				break;
 			}
 		}
-		delay(1);
+		delay(200);
 		float data = request.fdata;
 		request.fdata = 0.0;
 		return data;

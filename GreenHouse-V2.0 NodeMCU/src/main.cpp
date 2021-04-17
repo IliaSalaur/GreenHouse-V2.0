@@ -155,7 +155,7 @@ BLYNK_WRITE(V15)
 {
   if(param.asInt() == 0)
   {
-    pumpHandler[3]->setMode(manual);
+    pumpHandler[1]->setMode(manual);
     DEBUG(String("Mode manual 1"));
   }
   else
