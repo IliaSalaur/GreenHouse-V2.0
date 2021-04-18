@@ -3,7 +3,7 @@
 #define IHANDLER_H
 
 #include <Arduino.h>
-#include <ISensor.h>
+#include "utils/ISensor.h"
 
 class IHandler
 {
@@ -33,6 +33,23 @@ private:
 public:
     Handler();
     void begin(uint8_t id, I2CHandler<MASTER> *twi) override;
+    void setMode(ISensor *sensor) override;
+    void handle() override;
+    bool getState() override;
+    void manualEnable(bool enable) override;
+    Modes getMode() override;
+
+};
+
+class HeatHandler : IHandler
+{
+private:
+    ISensor* _sensors[4];
+
+public:
+    HeatHandler();
+    void begin(uint8_t id, I2CHandler<MASTER> *twi) override;
+    void setMode(ISensor *sensor[4]);
     void setMode(ISensor *sensor) override;
     void handle() override;
     bool getState() override;

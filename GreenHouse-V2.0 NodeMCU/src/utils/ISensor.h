@@ -1,7 +1,7 @@
 #ifndef ISENSOR_H
 #define ISENSOR_H
 #include <Arduino.h>
-#include <DataTransmiter.h>
+#include "utils/DataTransmiter.h"
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
@@ -79,6 +79,38 @@ private:
     const Modes _mode = AUTO;
 public:
     SoilMoistureSensor(I2CHandler<MASTER> *twi);
+    void begin(uint8_t id) override;
+    void setNormDataVal(float val) override;
+    bool isEnabled() override;
+    float getData() override;
+    Modes getMode() override;
+};
+
+class AirHumiditySensor : public ISensor
+{
+private:
+    float _normVal;
+    float _data;
+    I2CHandler<MASTER>* _twi;
+    const Modes _mode = AUTO;
+public:
+    AirHumiditySensor(I2CHandler<MASTER> *twi);
+    void begin(uint8_t id) override;
+    void setNormDataVal(float val) override;
+    bool isEnabled() override;
+    float getData() override;
+    Modes getMode() override;
+};
+
+class AirTemperatureSensor : public ISensor
+{
+private:
+    float _normVal;
+    float _data;
+    I2CHandler<MASTER>* _twi;
+    const Modes _mode = AUTO;
+public:
+    AirTemperatureSensor(I2CHandler<MASTER> *twi);
     void begin(uint8_t id) override;
     void setNormDataVal(float val) override;
     bool isEnabled() override;

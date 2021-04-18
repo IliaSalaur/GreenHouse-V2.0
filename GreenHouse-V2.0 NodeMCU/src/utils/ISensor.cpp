@@ -1,4 +1,4 @@
-#include <ISensor.h>
+#include "utils/ISensor.h"
 #define REQUEST_TIMER 500
 #define BORDER 3.0
 
@@ -117,6 +117,120 @@ Modes SoilMoistureSensor::getMode()
 /*----------------------------------------------------------------------------------------------*/
 
 
+AirHumiditySensor::AirHumiditySensor(I2CHandler<MASTER> *twi)
+{
+    _twi = twi;
+    _requestPeriod = REQUEST_TIMER;
+    _requestTimer = millis() + REQUEST_TIMER;
+    _enabled = 0;
+    _data = 0.0;
+}
+
+void AirHumiditySensor::begin(uint8_t id)
+{
+    _id = id;
+}
+
+float AirHumiditySensor::getData()
+{
+    if(millis() - _requestTimer >= _requestPeriod)
+    {
+        _requestTimer = millis();
+        _twi->sendCommand(_id, 1, 0);
+
+        //SEND -READ;
+        _data = _twi->getData();
+    }
+    return _data;
+}
+
+bool AirHumiditySensor::isEnabled()
+{
+    Serial.println(this->getData());
+    if(this->getData() >= (_normVal + BORDER))
+    {
+        _enabled = 0;
+    }
+
+    else if(this->getData() < (_normVal - BORDER))
+    {
+        _enabled = 1;
+    }
+    else Serial.println();
+    return _enabled;    
+}
+
+void AirHumiditySensor::setNormDataVal(float val)
+{
+    _normVal = val;
+}
+
+Modes AirHumiditySensor::getMode()
+{
+    return _mode;
+}
+
+
+/*----------------------------------------------------------------------------------------------*/
+
+
+AirTemperatureSensor::AirTemperatureSensor(I2CHandler<MASTER> *twi)
+{
+    _twi = twi;
+    _requestPeriod = REQUEST_TIMER;
+    _requestTimer = millis() + REQUEST_TIMER;
+    _enabled = 0;
+    _data = 0.0;
+}
+
+void AirTemperatureSensor::begin(uint8_t id)
+{
+    _id = id;
+}
+
+float AirTemperatureSensor::getData()
+{
+    if(millis() - _requestTimer >= _requestPeriod)
+    {
+        _requestTimer = millis();
+        _twi->sendCommand(_id, 0, 0);
+
+        //SEND -READ;
+        _data = _twi->getData();
+    }
+    return _data;
+}
+
+bool AirTemperatureSensor::isEnabled()
+{
+    Serial.println(this->getData());
+    if(this->getData() >= (_normVal + BORDER))
+    {
+        _enabled = 0;
+    }
+
+    else if(this->getData() < (_normVal - BORDER))
+    {
+        _enabled = 1;
+    }
+    else Serial.println();
+    return _enabled;    
+}
+
+void AirTemperatureSensor::setNormDataVal(float val)
+{
+    _normVal = val;
+}
+
+Modes AirTemperatureSensor::getMode()
+{
+    return _mode;
+}
+
+
+/*----------------------------------------------------------------------------------------------*/
+
+
 Manual::Manual()
 {
     _enabled = 0;
@@ -194,7 +308,7 @@ bool Scheduler::isEnabled()
 void Scheduler::setTimezone(int gmtChange)
 {
     _timeZone = gmtChange;
-    _timeClient->setTimeOffset(_timeZone);
+    _timeClient->setTimeOffset(_timeZone * 3600);
 }
 
 Modes Scheduler::getMode()

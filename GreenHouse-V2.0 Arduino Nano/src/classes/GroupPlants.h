@@ -171,6 +171,7 @@ void GroupPlant::requestSoilTemp()
      _tempSensor->requestTemperaturesByAddress((uint8_t*)_tempSensorAddr);
     float soilTemp = (float)_tempSensor->getTempC((uint8_t*)_tempSensorAddr);
     
+    
     if (soilTemp != DEVICE_DISCONNECTED_C)   _soilTemp = soilTemp;
     else
     {
