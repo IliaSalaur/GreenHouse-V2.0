@@ -3,7 +3,7 @@
 #define IHANDLER_H
 
 #include <Arduino.h>
-#include "utils/ISensor.h"
+#include "ISensor.h"
 
 class IHandler
 {

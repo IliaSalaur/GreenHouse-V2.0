@@ -1,4 +1,5 @@
 #include <Arduino.h>
+
 #include "utils/DataTransmiter.h"
 #include "utils/IHandler.h"
 
@@ -463,15 +464,20 @@ BLYNK_WRITE(V36)
     sch.hourStop = t.getStopHour();
     lightSch.setSchedule(sch);
     lightHandler.setMode(&lightSch);
+    for(int i = 0; i < 7; i++)
+    {
+      DEBUG(sch.days[i])
+    }
+    DEBUG(sch.hourStart)
+    DEBUG(sch.minuteStart)
+    DEBUG(sch.hourStop)
+    DEBUG(sch.minuteStop)
   }
-  for(int i = 0; i < 7; i++)
+  else 
   {
-    DEBUG(sch.days[i])
+    lightHandler.setMode(manual);
+    DEBUG("Light no schedule");
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 BLYNK_CONNECTED()
