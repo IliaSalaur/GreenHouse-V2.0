@@ -1,7 +1,7 @@
 #ifndef ISENSOR_H
 #define ISENSOR_H
 #include <Arduino.h>
-#include "utils/DataTransmiter.h"
+#include "DataTransmiter.h"
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
