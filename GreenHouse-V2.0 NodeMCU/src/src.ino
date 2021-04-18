@@ -1,15 +1,15 @@
 #include <Arduino.h>
 
 #include <utils/DataTransmiter.h>
-#include <utils/IHandler.h>
+#include "utils/IHandler.h"
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
 #include <Debug.h>
 
-#define SSID "leonid1"
-#define PASS "sl820710"
+#define SSID "Gnorberg_MSK"
+#define PASS "Vfzccjgh11$"
 #define TOKEN "LEBsLiSAb_vptx1ZWnTTgxd7yr-wC79Z"
 #define TIMEZONE 3
 
