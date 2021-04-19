@@ -11,6 +11,8 @@
 #define SSID "leonid1"
 #define PASS "sl820710"
 #define TOKEN "LEBsLiSAb_vptx1ZWnTTgxd7yr-wC79Z"
+
+#define TIMEZONE_JAVA "EAT" // eastern-asia time
 #define TIMEZONE 3
 
 I2CHandler<MASTER> twi;
@@ -174,6 +176,7 @@ BLYNK_WRITE(V12)
   {
     DEBUG(String("Mode mois 0"));
     pumpHandler[0]->setMode(soilMois[0]);
+    Blynk.virtualWrite(V13, -1, -1, TIMEZONE_JAVA); // reseting time
   } 
 }
 
@@ -183,26 +186,31 @@ BLYNK_WRITE(V13)
   TimeInputParam t(param);
   if(t.hasStartTime() && t.hasStopTime())
   {
-      for(int i = 0; i <= 7; i++)
-      {
-          if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
-          else sch.days[i - 1] = 0;
-      }
-      sch.minuteStart = t.getStartMinute();
-      sch.hourStart = t.getStartHour();
-      sch.minuteStop = t.getStopMinute();
-      sch.hourStop = t.getStopHour();
-      pumpSch[0]->setSchedule(sch);
-      pumpHandler[0]->setMode(pumpSch[0]);
+    for(int i = 0; i <= 7; i++)
+    {
+      if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
+      else sch.days[i - 1] = 0;
+    }
+    sch.minuteStart = t.getStartMinute();
+    sch.hourStart = t.getStartHour();
+    sch.minuteStop = t.getStopMinute();
+    sch.hourStop = t.getStopHour();
+    pumpSch[0]->setSchedule(sch);
+    pumpHandler[0]->setMode(pumpSch[0]);
+    for(int i = 0; i < 7; i++)
+    {
+      DEBUG(sch.days[i])
+    }
+    DEBUG(sch.hourStart)
+    DEBUG(sch.minuteStart)
+    DEBUG(sch.hourStop)
+    DEBUG(sch.minuteStop)
   }
-  for(int i = 0; i < 7; i++)
+  else
   {
-    DEBUG(sch.days[i])
+    pumpHandler[0]->setMode(manual);
+    DEBUG("Pump 0 no schedule")
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 
@@ -223,6 +231,7 @@ BLYNK_WRITE(V15)
   {
     DEBUG(String("Mode mois 1"));
     pumpHandler[1]->setMode(soilMois[1]);
+    Blynk.virtualWrite(V16, -1, -1, TIMEZONE_JAVA); // reseting time
   } 
 }
 
@@ -232,26 +241,31 @@ BLYNK_WRITE(V16)
   TimeInputParam t(param);
   if(t.hasStartTime() && t.hasStopTime())
   {
-      for(int i = 0; i <= 7; i++)
-      {
-          if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
-          else sch.days[i - 1] = 0;
-      }
-      sch.minuteStart = t.getStartMinute();
-      sch.hourStart = t.getStartHour();
-      sch.minuteStop = t.getStopMinute();
-      sch.hourStop = t.getStopHour();
-      pumpSch[1]->setSchedule(sch);
-      pumpHandler[1]->setMode(pumpSch[1]);
+    for(int i = 0; i <= 7; i++)
+    {
+      if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
+      else sch.days[i - 1] = 0;
+    }
+    sch.minuteStart = t.getStartMinute();
+    sch.hourStart = t.getStartHour();
+    sch.minuteStop = t.getStopMinute();
+    sch.hourStop = t.getStopHour();
+    pumpSch[1]->setSchedule(sch);
+    pumpHandler[1]->setMode(pumpSch[1]);
+    for(int i = 0; i < 7; i++)
+    {
+      DEBUG(sch.days[i])
+    }
+    DEBUG(sch.hourStart)
+    DEBUG(sch.minuteStart)
+    DEBUG(sch.hourStop)
+    DEBUG(sch.minuteStop)
   }
-  for(int i = 0; i < 7; i++)
+  else
   {
-    DEBUG(sch.days[i])
+    pumpHandler[1]->setMode(manual);
+    DEBUG("Pump 1 no schedule")
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 
@@ -272,6 +286,7 @@ BLYNK_WRITE(V18)
   {
     DEBUG(String("Mode mois 2"));
     pumpHandler[2]->setMode(soilMois[2]);
+    Blynk.virtualWrite(V19, -1, -1, TIMEZONE_JAVA); // reseting time
   } 
 }
 
@@ -281,26 +296,31 @@ BLYNK_WRITE(V19)
   TimeInputParam t(param);
   if(t.hasStartTime() && t.hasStopTime())
   {
-      for(int i = 0; i <= 7; i++)
-      {
-          if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
-          else sch.days[i - 1] = 0;
-      }
-      sch.minuteStart = t.getStartMinute();
-      sch.hourStart = t.getStartHour();
-      sch.minuteStop = t.getStopMinute();
-      sch.hourStop = t.getStopHour();
-      pumpSch[2]->setSchedule(sch);
-      pumpHandler[2]->setMode(pumpSch[2]);
+    for(int i = 0; i <= 7; i++)
+    {
+      if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
+      else sch.days[i - 1] = 0;
+    }
+    sch.minuteStart = t.getStartMinute();
+    sch.hourStart = t.getStartHour();
+    sch.minuteStop = t.getStopMinute();
+    sch.hourStop = t.getStopHour();
+    pumpSch[2]->setSchedule(sch);
+    pumpHandler[2]->setMode(pumpSch[2]);
+    for(int i = 0; i < 7; i++)
+    {
+      DEBUG(sch.days[i])
+    }
+    DEBUG(sch.hourStart)
+    DEBUG(sch.minuteStart)
+    DEBUG(sch.hourStop)
+    DEBUG(sch.minuteStop)
   }
-  for(int i = 0; i < 7; i++)
+  else
   {
-    DEBUG(sch.days[i])
+    pumpHandler[2]->setMode(manual);
+    DEBUG("Pump 2 no schedule")
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 
@@ -321,6 +341,7 @@ BLYNK_WRITE(V21)
   {
     DEBUG(String("Mode mois 3"));
     pumpHandler[3]->setMode(soilMois[3]);
+    Blynk.virtualWrite(V22, -1, -1, TIMEZONE_JAVA); // reseting time
   } 
 }
 
@@ -330,26 +351,31 @@ BLYNK_WRITE(V22)
   TimeInputParam t(param);
   if(t.hasStartTime() && t.hasStopTime())
   {
-      for(int i = 0; i <= 7; i++)
-      {
-          if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
-          else sch.days[i - 1] = 0;
-      }
-      sch.minuteStart = t.getStartMinute();
-      sch.hourStart = t.getStartHour();
-      sch.minuteStop = t.getStopMinute();
-      sch.hourStop = t.getStopHour();
-      pumpSch[3]->setSchedule(sch);
-      pumpHandler[3]->setMode(pumpSch[3]);
+    for(int i = 0; i <= 7; i++)
+    {
+      if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
+      else sch.days[i - 1] = 0;
+    }
+    sch.minuteStart = t.getStartMinute();
+    sch.hourStart = t.getStartHour();
+    sch.minuteStop = t.getStopMinute();
+    sch.hourStop = t.getStopHour();
+    pumpSch[3]->setSchedule(sch);
+    pumpHandler[3]->setMode(pumpSch[3]);
+    for(int i = 0; i < 7; i++)
+    {
+      DEBUG(sch.days[i])
+    }
+    DEBUG(sch.hourStart)
+    DEBUG(sch.minuteStart)
+    DEBUG(sch.hourStop)
+    DEBUG(sch.minuteStop)
   }
-  for(int i = 0; i < 7; i++)
+  else
   {
-    DEBUG(sch.days[i])
+    pumpHandler[3]->setMode(manual);
+    DEBUG("Pump 3 no schedule");
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 BLYNK_WRITE(V23)      //normval
@@ -430,15 +456,20 @@ BLYNK_WRITE(V34)
     sch.hourStop = t.getStopHour();
     wateringSch.setSchedule(sch);
     wateringHandler.setMode(&wateringSch);
-  }
-  for(int i = 0; i < 7; i++)
+      for(int i = 0; i < 7; i++)
+      {
+        DEBUG(sch.days[i])
+      }
+      DEBUG(sch.hourStart)
+      DEBUG(sch.minuteStart)
+      DEBUG(sch.hourStop)
+      DEBUG(sch.minuteStop)
+  }  
+  else 
   {
-    DEBUG(sch.days[i])
+    wateringHandler.setMode(manual);
+    DEBUG("Watering no schedule");
   }
-  DEBUG(sch.hourStart)
-  DEBUG(sch.minuteStart)
-  DEBUG(sch.hourStop)
-  DEBUG(sch.minuteStop)
 }
 
 BLYNK_WRITE(V35)
@@ -455,8 +486,8 @@ BLYNK_WRITE(V36)
   {
     for(int i = 0; i <= 7; i++)
     {
-        if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
-        else sch.days[i - 1] = 0;
+      if(t.isWeekdaySelected(i) == 1) sch.days[i - 1] = 1;
+      else sch.days[i - 1] = 0;
     }
     sch.minuteStart = t.getStartMinute();
     sch.hourStart = t.getStartHour();
