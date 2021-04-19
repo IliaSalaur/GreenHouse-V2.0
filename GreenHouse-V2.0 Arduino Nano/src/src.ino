@@ -7,7 +7,7 @@
 #define WATER_PIN 12
 
 #include <DHT.h>
-#define DHT_TYPE DHT11
+#define DHT_TYPE DHT22
 #define DHT_PIN 2
 DHT dht(DHT_PIN, DHT_TYPE);
 

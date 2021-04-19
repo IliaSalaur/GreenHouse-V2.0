@@ -4,7 +4,7 @@
 #define DATATRANSMITER_H
 #include <Arduino.h>
 #include <Wire.h>
-#include <Debug.h>
+#include "Debug.h"
 #define REQUEST_TIMEOUT 15
 
 
@@ -246,6 +246,7 @@ public:
 		Wire.beginTransmission(_sAddr);
         Wire.write(enc);
         Wire.endTransmission();
+		DEBUG(String("Send data ") + String(enc))
         delay(10);
 	}
 
@@ -264,6 +265,7 @@ public:
 				break;
 			}
 		}
+		DEBUG(String("Received ") + String(request.fdata))
 		delay(200);
 		float data = request.fdata;
 		request.fdata = 0.0;
