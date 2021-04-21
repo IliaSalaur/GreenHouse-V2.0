@@ -33,7 +33,7 @@ float SoilTemperatureSensor::getData()
 
 bool SoilTemperatureSensor::isEnabled()
 {
-    Serial.print(this->getData());
+    Serial.println(this->getData());
     if(this->getData() >= (_normVal + BORDER))
     {
         _enabled = 0;

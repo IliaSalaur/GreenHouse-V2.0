@@ -34,6 +34,7 @@ Settings settings[4];
 
 I2CHandler<SLAVE> twi;
 uint32_t timer = 0;
+int i = 0;
 
 void setupGroups();
 void printEx();
@@ -52,6 +53,7 @@ bool fanState = 0;
 bool jalouseDown = 0; // off - open , down 0 - open
 
 uint32_t airDataRequestTimer = 0;
+uint32_t soilDataRequestTimer = 0;
 
 void setup() {
 
@@ -70,10 +72,15 @@ void loop() {
   commandHandler(twi.getCommand());
   jalouse.handle();
 
-  for(byte i = 0; i < 4; i++)
+  i = (i == 4) ? 0:i;
+
+  if(millis() - soilDataRequestTimer > 3000)
   {
+    soilDataRequestTimer = millis();
     groups[i]->requestSoilTemp();
+    i++;
   }
+  
 
   if(millis() - airDataRequestTimer > 15000)
   {
@@ -176,6 +183,7 @@ void commandHandler(Command _comm)
         if(_comm.id < 4)
         {
           twi.sendData(groups[_comm.id]->getSoilTemp());
+  
         }
         else if(_comm.id == 4)
         {
@@ -230,5 +238,6 @@ void commandHandler(Command _comm)
         }
         break;
     }
+
   }
 }

@@ -247,26 +247,32 @@ public:
         Wire.write(enc);
         Wire.endTransmission();
 		DEBUG(String("Send data ") + String(enc))
-        delay(10);
+        delay(500);
 	}
 
-	float getData(bool gettingState = 0)
+	float getData()
 	{	
 		uint32_t requestTimer = millis();
 		Wire.requestFrom(_sAddr, 4);
 		while(millis() - requestTimer < 700)
 		{
-			if(Wire.available() > 0)
+			if(Wire.available() > 2)
 			{				
-				for(byte i = 0; i < 4; i++)
+				for(int i = 0; i < 4; i++)
 				{
 					request.rawData[i] = Wire.read();
-				}         
+				}				
 				break;
+				
 			}
+			else 
+			{
+				request.fdata = -345;
+				
+			} 
 		}
 		DEBUG(String("Received ") + String(request.fdata))
-		delay(200);
+		delay(100);
 		float data = request.fdata;
 		request.fdata = 0.0;
 		return data;

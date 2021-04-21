@@ -172,10 +172,10 @@ void GroupPlant::requestSoilTemp()
     float soilTemp = (float)_tempSensor->getTempC((uint8_t*)_tempSensorAddr);
     
     
-    if (soilTemp != DEVICE_DISCONNECTED_C)   _soilTemp = soilTemp;
+    if (soilTemp != DEVICE_DISCONNECTED_C && soilTemp > -1)   _soilTemp = soilTemp;
     else
     {
-      _exception += "Device disconected";
+      _exception += "Device disconected / Bad data";
     }
   }
 }
