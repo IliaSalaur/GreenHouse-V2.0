@@ -50,6 +50,7 @@ public:
     void begin();
     uint16_t calibrateMoistureAir();
     uint16_t calibrateMoistureWater();
+    void setCalibrationVals(uint16_t air, uint16_t water);
     void turnPump(bool pumpState);
     void clearException();
     bool getPumpState();
@@ -102,6 +103,12 @@ void GroupPlant::begin()
       _exception += String(byte(*_tempSensorAddr[i]));
     }    
   }
+}
+
+void GroupPlant::setCalibrationVals(uint16_t air, uint16_t water)
+{
+  _calibrationAirValue = air;
+  _calibrationWaterValue = water;
 }
 
 uint16_t GroupPlant::calibrateMoistureAir()

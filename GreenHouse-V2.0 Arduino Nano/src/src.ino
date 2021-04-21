@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include "classes/GroupPlants.h"
+#include <EEPROM.h>
+#define CALIBRATION_MODE
+#define FORCE_CALIBRATION
 
 #define LIGHT_PIN 13
 #define HEAT_PIN A0
@@ -54,6 +57,12 @@ bool jalouseDown = 0; // off - open , down 0 - open
 
 uint32_t airDataRequestTimer = 0;
 uint32_t soilDataRequestTimer = 0;
+
+struct CalibrationValues
+{
+  uint16_t airValue;
+  uint16_t waterValue;
+};
 
 void setup() {
 
@@ -119,18 +128,32 @@ void setupGroups()
     groups[i]->turnPump(0);
   }
   #ifdef CALIBRATION_MODE
-  bool calibrated = 0;
+  bool calibrated = 0, writeToEEP = 0;
   Serial.println("Calibration mode: ");
+  CalibrationValues calibrationVals[4];
+  for(int i = 0, addr = 0; i < 4; i++, addr+=sizeof(CalibrationValues))
+  {
+    EEPROM.get(addr, calibrationVals[i]);
+    if(calibrationVals[i].airValue == 0 || calibrationVals[i].airValue > 1024)
+    {
+      writeToEEP = 1;
+      break;
+    }
+
+    #ifdef FORCE_CALIBRATION
+    writeToEEP = 1;
+    #endif
+  }
   while (calibrated == 0)
   {
-    if (Serial.available())
+    if (Serial.available() && writeToEEP == 1)
     {
       switch (Serial.read())
       {
         case 'a':
           for (byte i = 0; i < 4; i ++ )
           {
-            groups[i]->calibrateMoistureAir();
+            calibrationVals[i].airValue = groups[i]->calibrateMoistureAir();
             Serial.println(groups[i]->getExceptions());
           }
           break;
@@ -138,15 +161,30 @@ void setupGroups()
         case 'w':
           for (byte i = 0; i < 4; i ++ )
           {
-            groups[i]->calibrateMoistureWater();
+            calibrationVals[i].waterValue = groups[i]->calibrateMoistureWater();
             Serial.println(groups[i]->getExceptions());
           }
           break;
 
-        case 'd':
+        case 'c':
           calibrated = 1;
+          for(int i = 0, addr = 0; i < 4; i++, addr+=sizeof(CalibrationValues))
+          {
+            DEBUG(addr)
+            EEPROM.put(addr, calibrationVals[i]);
+          }
           break;
       }
+    }
+    else if(writeToEEP == 0)
+    {
+      for(int i = 0; i < 4; i++)
+      {
+        DEBUG(String("EEP vals ") + String(calibrationVals[i].airValue) + String(" ") + String(calibrationVals[i].waterValue))
+        groups[i]->setCalibrationVals(calibrationVals[i].airValue, calibrationVals[i].waterValue);
+
+      }
+      calibrated = 1;
     }
   }
 #endif

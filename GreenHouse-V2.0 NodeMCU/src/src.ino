@@ -6,11 +6,7 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
-<<<<<<< Updated upstream
 #include "utils/Debug.h"
-=======
-#include "utils/Debug.h""
->>>>>>> Stashed changes
 
 #define SSID "Gnorberg_MSK"
 #define PASS "Vfzccjgh11$"
