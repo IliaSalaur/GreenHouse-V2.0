@@ -8,8 +8,8 @@
 
 #include "utils/Debug.h"
 
-#define SSID "Gnorberg_MSK"
-#define PASS "Vfzccjgh11$"
+#define SSID "Gnorberg_Village"
+#define PASS "Vjmmzvd11$"
 #define TOKEN "LEBsLiSAb_vptx1ZWnTTgxd7yr-wC79Z"
 #define TIMEZONE 3
 
