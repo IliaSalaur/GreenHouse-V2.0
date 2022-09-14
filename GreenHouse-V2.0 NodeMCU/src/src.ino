@@ -10,7 +10,7 @@
 
 #define SSID "Gnorberg_Village"
 #define PASS "Vjmmzvd11$"
-#define TOKEN "LEBsLiSAb_vptx1ZWnTTgxd7yr-wC79Z"
+#define TOKEN /*token*/
 #define TIMEZONE 3
 
 I2CHandler<MASTER> twi;
